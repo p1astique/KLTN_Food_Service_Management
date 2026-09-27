@@ -1,4 +1,5 @@
 using FoodServiceApp.Maui.Models;
+using FoodServiceApp.Maui.Services;
 
 namespace FoodServiceApp.Maui.Views;
 
@@ -58,6 +59,7 @@ public partial class VendorHomePage : ContentPage
     private void OnSwitchMoCuaToggled(object? sender, ToggledEventArgs e)
     {
         MockData.GianHangHienTai.DangMoCua = e.Value;
+        VendorLocalStore.Luu();
         LblTrangThaiMoCua.Text = e.Value ? "Đang mở bán" : "Đang tạm đóng";
         // TODO: gọi PUT /api/gian-hang/{id}/trang-thai-kinh-doanh { dangMoCua } khi có API thật.
     }
@@ -67,6 +69,7 @@ public partial class VendorHomePage : ContentPage
         if (sender is not Button { CommandParameter: DonHang don }) return;
 
         don.TrangThai = TrangThaiDonHang.DangLam;
+        VendorLocalStore.Luu();
         // TODO: gọi PUT /api/gian-hang/don-hang/{id}/xac-nhan khi có API thật.
 
         NapThongKeNhanh();
@@ -85,6 +88,7 @@ public partial class VendorHomePage : ContentPage
         if (!xacNhan) return;
 
         don.TrangThai = TrangThaiDonHang.DaHuy;
+        VendorLocalStore.Luu();
         // TODO: gọi PUT /api/gian-hang/don-hang/{id}/tu-choi khi có API thật (kèm xử lý hoàn tiền).
 
         NapThongKeNhanh();
@@ -110,6 +114,7 @@ public partial class VendorHomePage : ContentPage
         bool xacNhan = await DisplayAlert("Đăng xuất", "Bạn có chắc muốn đăng xuất khỏi gian hàng?", "Đăng xuất", "Hủy");
         if (!xacNhan) return;
 
+        MockData.GianHangHienTai = MockData.DanhSachGianHang.First(g => g.Id == "gh1");
         await Shell.Current.GoToAsync("//dang-nhap");
     }
 }

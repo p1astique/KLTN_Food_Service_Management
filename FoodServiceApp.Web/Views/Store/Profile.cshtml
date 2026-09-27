@@ -1,0 +1,18 @@
+@model StoreProfile
+@{ ViewData["Title"] = "Thông tin gian hàng"; }
+<div class="page-heading"><div><h1>Thông tin gian hàng</h1><p>Cập nhật thông tin khách hàng nhìn thấy trên ứng dụng.</p></div></div>
+<form asp-action="Profile" method="post" class="card">
+    @Html.AntiForgeryToken()
+    <input asp-for="Id" type="hidden" />
+    <div asp-validation-summary="ModelOnly" class="alert error"></div>
+    <div class="form-grid">
+        <div class="field"><label asp-for="Name">Tên gian hàng *</label><input asp-for="Name" required maxlength="100" /></div>
+        <div class="field"><label asp-for="Phone">Số điện thoại *</label><input asp-for="Phone" required /></div>
+        <div class="field"><label asp-for="Email">Email liên hệ</label><input asp-for="Email" type="email" /></div>
+        <div class="field"><label asp-for="DeliveryMinutes">Thời gian giao dự kiến (phút) *</label><input asp-for="DeliveryMinutes" type="number" min="1" max="300" required /></div>
+        <div class="field" style="grid-column:1/-1"><label asp-for="Address">Địa chỉ gian hàng *</label><input asp-for="Address" required /></div>
+        <div class="field" style="grid-column:1/-1"><label asp-for="Description">Mô tả</label><textarea asp-for="Description" maxlength="500"></textarea><small>Giới thiệu ngắn về món ăn và dịch vụ của quán.</small></div>
+    </div>
+    <div class="field"><label>Trạng thái kinh doanh</label><label style="display:flex;align-items:center;gap:9px;font-weight:500"><input asp-for="IsOpen" style="width:18px;height:18px;accent-color:var(--green)" /> Đang mở nhận đơn</label></div>
+    <div class="form-actions"><a class="btn btn-light" asp-controller="Dashboard" asp-action="Index">Hủy</a><button class="btn btn-primary" type="submit">Lưu thay đổi</button></div>
+</form>

@@ -1,0 +1,81 @@
+namespace FoodServiceApp.Web.Models;
+
+public sealed class PortalData
+{
+    public StoreProfile Store { get; set; } = new();
+    public List<FoodCategory> Categories { get; set; } = new();
+    public List<FoodItem> Foods { get; set; } = new();
+    public List<StoreOrder> Orders { get; set; } = new();
+}
+
+public sealed class StoreProfile
+{
+    public string Id { get; set; } = "gh1";
+    public string Name { get; set; } = "Cơm Tấm Sài Gòn";
+    public string Address { get; set; } = "12 Nguyễn Trãi, Quận 5, TP. Hồ Chí Minh";
+    public string Phone { get; set; } = "0908 111 222";
+    public string Email { get; set; } = "comtam.saigon@gianhang.vn";
+    public string Description { get; set; } = "Cơm tấm sườn bì chả chuẩn vị Sài Gòn.";
+    public int DeliveryMinutes { get; set; } = 25;
+    public bool IsOpen { get; set; } = true;
+}
+
+public sealed class FoodCategory
+{
+    public string Id { get; set; } = Guid.NewGuid().ToString("N");
+    public string Name { get; set; } = "";
+}
+
+public sealed class FoodItem
+{
+    public string Id { get; set; } = Guid.NewGuid().ToString("N");
+    public string Name { get; set; } = "";
+    public string CategoryId { get; set; } = "";
+    public decimal Price { get; set; }
+    public string Emoji { get; set; } = "🍲";
+    public bool InStock { get; set; } = true;
+    public string Description { get; set; } = "";
+}
+
+public enum OrderStatus { ChoXacNhan, DangChuanBi, DangGiao, HoanThanh, DaHuy }
+
+public sealed class StoreOrder
+{
+    public string Id { get; set; } = "";
+    public string Customer { get; set; } = "";
+    public string Address { get; set; } = "";
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
+    public decimal Total { get; set; }
+    public OrderStatus Status { get; set; }
+    public string Items { get; set; } = "";
+}
+
+public sealed class DashboardViewModel
+{
+    public required StoreProfile Store { get; init; }
+    public required IReadOnlyList<StoreOrder> RecentOrders { get; init; }
+    public int PendingCount { get; init; }
+    public int FoodCount { get; init; }
+    public decimal TodayRevenue { get; init; }
+    public int TodayCompleted { get; init; }
+}
+
+public sealed class FoodFormModel
+{
+    public string? Id { get; set; }
+    public string Name { get; set; } = "";
+    public string CategoryId { get; set; } = "";
+    public decimal Price { get; set; }
+    public string Emoji { get; set; } = "🍲";
+    public string Description { get; set; } = "";
+    public bool InStock { get; set; } = true;
+}
+
+public sealed class CatalogViewModel
+{
+    public required IReadOnlyList<FoodCategory> Categories { get; init; }
+    public required IReadOnlyList<FoodItem> Foods { get; init; }
+    public required IReadOnlyDictionary<string, string> CategoryNames { get; init; }
+    public string? SelectedCategory { get; init; }
+    public FoodFormModel Form { get; init; } = new();
+}

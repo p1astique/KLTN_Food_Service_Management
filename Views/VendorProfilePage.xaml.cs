@@ -1,3 +1,5 @@
+using FoodServiceApp.Maui.Services;
+
 namespace FoodServiceApp.Maui.Views;
 
 public partial class VendorProfilePage : ContentPage
@@ -31,7 +33,7 @@ public partial class VendorProfilePage : ContentPage
         LblLoi.IsVisible = false;
     }
 
-    private async void OnLuuClicked(object sender, EventArgs e)
+    private void OnLuuClicked(object sender, EventArgs e)
     {
         LblLoi.IsVisible = false;
         LblThanhCong.IsVisible = false;
@@ -63,9 +65,6 @@ public partial class VendorProfilePage : ContentPage
 
         try
         {
-            // TODO: gọi PUT /api/gian-hang/{id}/thong-tin khi có API thật.
-            await Task.Delay(500);
-
             var gh = Models.MockData.GianHangHienTai;
             gh.HinhAnh = string.IsNullOrWhiteSpace(EntryHinhAnh.Text) ? gh.HinhAnh : EntryHinhAnh.Text.Trim();
             gh.TenGianHang = EntryTenGianHang.Text.Trim();
@@ -74,6 +73,7 @@ public partial class VendorProfilePage : ContentPage
             gh.ThoiGianGiaoPhut = thoiGianGiao;
             gh.MoTa = EditorMoTa.Text?.Trim() ?? "";
             gh.DangMoCua = SwitchDangMoCua.IsToggled;
+            VendorLocalStore.Luu();
 
             LblAnhHienTai.Text = gh.HinhAnh;
             LblThanhCong.IsVisible = true;

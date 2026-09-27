@@ -1,0 +1,46 @@
+@model CatalogViewModel
+@{ ViewData["Title"] = "Danh mục & món ăn"; }
+<div class="page-heading"><div><h1>Danh mục & món ăn</h1><p>Sắp xếp thực đơn và cập nhật món đang phục vụ.</p></div><a class="btn btn-primary" href="#food-form">＋ Thêm món ăn</a></div>
+<div class="catalog-layout">
+    <div class="card">
+        <div class="section-head"><h2 class="section-title">Danh mục</h2><span class="pill">@Model.Categories.Count</span></div>
+        <form asp-action="AddCategory" method="post" style="display:flex;gap:7px;margin-bottom:14px">
+            @Html.AntiForgeryToken()<input class="inline-input" name="name" placeholder="Tên danh mục mới" maxlength="50" required minlength="2" /><button class="btn btn-primary" type="submit">＋</button>
+        </form>
+        <div class="category-list">
+            @foreach (var cat in Model.Categories)
+            {
+                <div class="category-row"><span class="cat-name">@cat.Name</span>
+                    <details><summary class="tiny-button">Sửa</summary><form asp-action="RenameCategory" method="post" style="display:flex;gap:5px;margin-top:7px">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@cat.Id"/><input class="inline-input" name="name" value="@cat.Name" maxlength="50" required/><button class="tiny-button" type="submit">Lưu</button></form></details>
+                    <form asp-action="DeleteCategory" method="post" class="delete-category-form" data-confirm="Xóa danh mục này? Các món sẽ được chuyển sang danh mục đã chọn.">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@cat.Id"/><select name="moveToCategoryId" aria-label="Chuyển món đến" class="tiny-select"><option value="">Chuyển món đến…</option>@foreach(var target in Model.Categories.Where(c=>c.Id!=cat.Id)){<option value="@target.Id">@target.Name</option>}</select><button class="tiny-button danger-text" type="submit" title="Xóa danh mục">×</button></form>
+                </div>
+            }
+            @if (Model.Categories.Count == 0) { <div class="empty">Chưa có danh mục.</div> }
+        </div>
+    </div>
+    <div class="card">
+        <div class="section-head"><h2 class="section-title">Thực đơn <span class="muted" style="font:500 12px 'DM Sans'">@Model.Foods.Count món</span></h2></div>
+        <div class="filters"><a class="filter @(Model.SelectedCategory is null ? "selected" : "")" asp-action="Index">Tất cả</a>@foreach(var cat in Model.Categories){<a class="filter @(Model.SelectedCategory == cat.Id ? "selected" : "")" asp-action="Index" asp-route-category="@cat.Id">@cat.Name</a>}</div>
+        @if(Model.Foods.Count == 0){<div class="empty">Chưa có món trong danh mục này.</div>}
+        else { <div class="table-wrap"><table><thead><tr><th>MÓN ĂN</th><th>DANH MỤC</th><th>GIÁ BÁN</th><th>TÌNH TRẠNG</th><th></th></tr></thead><tbody>
+            @foreach(var food in Model.Foods){<tr><td><div class="food-cell"><span class="food-emoji">@food.Emoji</span><div><div class="food-name">@food.Name</div><div class="food-desc">@food.Description</div></div></div></td><td>@(Model.CategoryNames.GetValueOrDefault(food.CategoryId, "—"))</td><td><b>@food.Price.ToString("N0") đ</b></td><td><form asp-action="ToggleStock" method="post" style="margin:0">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@food.Id"/><button class="pill @(food.InStock ? "" : "red") stock-button" type="submit">@(food.InStock ? "Còn hàng" : "Tạm hết")</button></form></td><td><div class="actions"><a class="tiny-button" asp-action="Index" asp-route-edit="@food.Id">Sửa</a><form asp-action="DeleteFood" method="post" data-confirm="Xóa món @food.Name?">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@food.Id"/><button class="tiny-button danger-text" type="submit">Xóa</button></form></div></td></tr>}
+        </tbody></table></div> }
+    </div>
+</div>
+<div class="card" id="food-form" style="margin-top:17px">
+    <div class="section-head"><h2 class="section-title">@(string.IsNullOrEmpty(Model.Form.Id) ? "Thêm món ăn" : "Cập nhật món ăn")</h2>@if(!string.IsNullOrEmpty(Model.Form.Id)){<a class="text-link" asp-action="Index">＋ Tạo món mới</a>}</div>
+    @if(Model.Categories.Count == 0){<div class="alert error">Hãy tạo danh mục trước khi thêm món ăn.</div>}
+    else {
+    <form asp-action="SaveFood" method="post">
+        @Html.AntiForgeryToken()<input asp-for="Form.Id" type="hidden" name="Id" />
+        <div class="form-grid">
+            <div class="field"><label for="food-name">Tên món *</label><input id="food-name" name="Name" value="@Model.Form.Name" required maxlength="100" placeholder="Ví dụ: Cơm tấm sườn bì chả" /></div>
+            <div class="field"><label for="category-id">Danh mục *</label><select id="category-id" name="CategoryId" required><option value="">Chọn danh mục</option>@foreach(var cat in Model.Categories){<option value="@cat.Id" selected="@(cat.Id == Model.Form.CategoryId)">@cat.Name</option>}</select></div>
+            <div class="field"><label for="food-price">Giá bán (đ) *</label><input id="food-price" name="Price" type="number" min="1000" step="1000" value="@(Model.Form.Price == 0 ? "" : Model.Form.Price)" required /></div>
+            <div class="field"><label for="food-emoji">Biểu tượng</label><input id="food-emoji" name="Emoji" value="@Model.Form.Emoji" maxlength="8" /></div>
+            <div class="field" style="grid-column:1/-1"><label for="food-description">Mô tả</label><input id="food-description" name="Description" value="@Model.Form.Description" maxlength="250" placeholder="Mô tả ngắn về món ăn" /></div>
+        </div>
+        <div class="field"><label style="display:flex;gap:8px;align-items:center;font-weight:500"><input type="checkbox" name="InStock" value="true" checked="@(Model.Form.InStock ? "checked" : null)" style="accent-color:var(--green)" /> Món đang còn hàng</label></div>
+        <div class="form-actions"><button class="btn btn-primary" type="submit">Lưu món ăn</button></div>
+    </form> }
+</div>

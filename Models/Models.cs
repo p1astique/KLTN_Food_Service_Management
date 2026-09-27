@@ -239,6 +239,24 @@ public class DonHang
 /// </summary>
 public static class MockData
 {
+    // Danh mục được lưu riêng theo từng gian hàng, ban đầu suy ra từ các món mẫu hiện có.
+    public static Dictionary<string, List<string>> DanhMucTheoGianHang { get; } = new()
+    {
+        ["gh1"] = new() { "Món chính", "Món phụ", "Nước uống", "Tráng miệng" }
+    };
+
+    public static List<string> DanhMucCuaGianHang(string gianHangId)
+    {
+        if (!DanhMucTheoGianHang.TryGetValue(gianHangId, out var danhMuc))
+        {
+            danhMuc = DanhSachMonAn.Where(m => m.GianHangId == gianHangId)
+                .Select(m => m.DanhMuc).Where(x => !string.IsNullOrWhiteSpace(x))
+                .Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+            DanhMucTheoGianHang[gianHangId] = danhMuc;
+        }
+        return danhMuc;
+    }
+
     public static List<GianHang> DanhSachGianHang { get; } = new()
     {
         new GianHang

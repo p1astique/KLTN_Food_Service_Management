@@ -1,0 +1,39 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "MAUI: Run Android",
+      "type": "process",
+      "command": "dotnet",
+      "args": ["build", "-t:Run", "-f", "net8.0-android"],
+      "problemMatcher": "$msCompile",
+      "group": "build"
+    },
+    {
+      "label": "MAUI: Run Windows",
+      "type": "process",
+      "command": "dotnet",
+      "args": ["build", "-t:Run", "-f", "net8.0-windows10.0.19041.0"],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "WEB: Run vendor portal",
+      "type": "process",
+      "command": "dotnet",
+      "args": ["run", "--project", "FoodServiceApp.Web/FoodServiceApp.Web.csproj", "--launch-profile", "http"],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "Run MAUI + Web (Windows)",
+      "dependsOn": ["MAUI: Run Windows", "WEB: Run vendor portal"],
+      "dependsOrder": "parallel",
+      "problemMatcher": []
+    },
+    {
+      "label": "Run MAUI + Web (Android)",
+      "dependsOn": ["MAUI: Run Android", "WEB: Run vendor portal"],
+      "dependsOrder": "parallel",
+      "problemMatcher": []
+    }
+  ]
+}

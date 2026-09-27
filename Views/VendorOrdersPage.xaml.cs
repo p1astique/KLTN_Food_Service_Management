@@ -1,4 +1,5 @@
 using FoodServiceApp.Maui.Models;
+using FoodServiceApp.Maui.Services;
 
 namespace FoodServiceApp.Maui.Views;
 
@@ -84,6 +85,7 @@ public partial class VendorOrdersPage : ContentPage
         if (sender is not Button { CommandParameter: DonHang don }) return;
 
         don.TrangThai = TrangThaiDonHang.DangLam;
+        VendorLocalStore.Luu();
         // TODO: gọi PUT /api/gian-hang/don-hang/{id}/xac-nhan khi có API thật.
 
         NapDanhSach();
@@ -101,6 +103,7 @@ public partial class VendorOrdersPage : ContentPage
         if (!xacNhan) return;
 
         don.TrangThai = TrangThaiDonHang.DaHuy;
+        VendorLocalStore.Luu();
         // TODO: gọi PUT /api/gian-hang/don-hang/{id}/tu-choi khi có API thật (kèm xử lý hoàn tiền).
 
         NapDanhSach();
@@ -111,6 +114,7 @@ public partial class VendorOrdersPage : ContentPage
         if (sender is not Button { CommandParameter: DonHang don }) return;
 
         don.TrangThai = TrangThaiDonHang.DangGiao;
+        VendorLocalStore.Luu();
         // TODO: gọi PUT /api/gian-hang/don-hang/{id}/san-sang-giao khi có API thật,
         // backend sẽ đẩy đơn này vào hàng đợi cho tài xế nhận (xem DriverHomePage).
 

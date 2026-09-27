@@ -1,4 +1,5 @@
 using FoodServiceApp.Maui.Models;
+using FoodServiceApp.Maui.Services;
 
 namespace FoodServiceApp.Maui.Views;
 
@@ -33,6 +34,7 @@ public partial class VendorMenuItemEditPage : ContentPage
             PickerDanhMuc.SelectedItem = _monDangSua.DanhMuc;
             EntryGia.Text = ((long)_monDangSua.Gia).ToString();
             SwitchConHang.IsToggled = _monDangSua.ConHang;
+            PickerDanhMuc.ItemsSource = MockData.DanhMucCuaGianHang(MockData.GianHangHienTai.Id).ToList();
         }
         else
         {
@@ -45,6 +47,7 @@ public partial class VendorMenuItemEditPage : ContentPage
             PickerDanhMuc.SelectedItem = null;
             EntryGia.Text = "";
             SwitchConHang.IsToggled = true;
+            PickerDanhMuc.ItemsSource = MockData.DanhMucCuaGianHang(MockData.GianHangHienTai.Id).ToList();
         }
     }
 
@@ -59,7 +62,7 @@ public partial class VendorMenuItemEditPage : ContentPage
         }
         if (PickerDanhMuc.SelectedItem is null)
         {
-            HienLoi("Vui lòng chọn danh mục");
+            HienLoi("Hãy tạo danh mục trước khi thêm món ăn");
             return;
         }
         if (!decimal.TryParse(EntryGia.Text, out var gia) || gia <= 0)
@@ -74,11 +77,6 @@ public partial class VendorMenuItemEditPage : ContentPage
 
         try
         {
-            // TODO: gọi ASP.NET Core Web API thật:
-            //   POST /api/gian-hang/mon-an        (thêm mới)
-            //   PUT  /api/gian-hang/mon-an/{id}    (cập nhật)
-            await Task.Delay(400);
-
             var hinhAnh = string.IsNullOrWhiteSpace(EntryHinhAnh.Text) ? "🍲" : EntryHinhAnh.Text.Trim();
             var danhMuc = (string)PickerDanhMuc.SelectedItem;
 
@@ -105,6 +103,8 @@ public partial class VendorMenuItemEditPage : ContentPage
                 MockData.DanhSachMonAn.Add(monMoi);
             }
 
+            VendorLocalStore.Luu();
+
             await Shell.Current.GoToAsync("..");
         }
         finally
@@ -123,7 +123,7 @@ public partial class VendorMenuItemEditPage : ContentPage
         if (!xacNhan) return;
 
         MockData.DanhSachMonAn.Remove(_monDangSua);
-        // TODO: gọi DELETE /api/gian-hang/mon-an/{id} khi có API thật.
+        VendorLocalStore.Luu();
 
         await Shell.Current.GoToAsync("..");
     }

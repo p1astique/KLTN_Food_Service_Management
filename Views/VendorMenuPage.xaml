@@ -1,20 +1,23 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+﻿<?xml version="1.0" encoding="UTF-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:models="clr-namespace:FoodServiceApp.Maui.Models"
              x:Class="FoodServiceApp.Maui.Views.VendorMenuPage"
-             Title="Thực đơn">
+             Title="Thá»±c Ä‘Æ¡n">
 
-    <Grid RowDefinitions="Auto,*" Padding="16">
+    <Grid RowDefinitions="Auto,Auto,*" Padding="16">
 
-        <Button Grid.Row="0" Text="+ Thêm món mới" Style="{StaticResource PrimaryButton}"
-                Margin="0,0,0,12" Clicked="OnThemMonClicked" />
+        <VerticalStackLayout Grid.Row="0" Spacing="8" Margin="0,0,0,12">
+            <Button Text="Quản lý danh mục" Style="{StaticResource OutlineButton}" Clicked="OnQuanLyDanhMucClicked" />
+            <Button Text="+ Thêm món mới" Style="{StaticResource PrimaryButton}" Clicked="OnThemMonClicked" />
+        </VerticalStackLayout>
+        <ScrollView Grid.Row="1" Orientation="Horizontal" HorizontalScrollBarVisibility="Never" Margin="0,0,0,10"><HorizontalStackLayout x:Name="KhungDanhMuc" Spacing="8" /></ScrollView>
 
-        <RefreshView Grid.Row="1" x:Name="RefreshThucDon" Refreshing="OnRefreshing">
+        <RefreshView Grid.Row="2" x:Name="RefreshThucDon" Refreshing="OnRefreshing">
             <ScrollView>
                 <VerticalStackLayout Spacing="10">
 
-                    <Label x:Name="LblRong" Text="Gian hàng chưa có món ăn nào. Bấm &quot;+ Thêm món mới&quot; để bắt đầu."
+                    <Label x:Name="LblRong" Text="Gian hÃ ng chÆ°a cÃ³ mÃ³n Äƒn nÃ o. Báº¥m &quot;+ ThÃªm mÃ³n má»›i&quot; Ä‘á»ƒ báº¯t Ä‘áº§u."
                            Style="{StaticResource SubtitleLabel}" HorizontalOptions="Center"
                            Margin="0,30,0,0" IsVisible="False" />
 
@@ -36,8 +39,8 @@
                                                 <Label.FormattedText>
                                                     <FormattedString>
                                                         <Span Text="{Binding DanhMuc}" />
-                                                        <Span Text="  •  " />
-                                                        <Span Text="{Binding Gia, StringFormat='{0:N0}đ'}" />
+                                                        <Span Text="  â€¢  " />
+                                                        <Span Text="{Binding Gia, StringFormat='{0:N0}Ä‘'}" />
                                                     </FormattedString>
                                                 </Label.FormattedText>
                                             </Label>
@@ -50,9 +53,9 @@
                                         </VerticalStackLayout>
 
                                         <Grid Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" ColumnDefinitions="*,*" ColumnSpacing="8">
-                                            <Button Grid.Column="0" Text="Sửa" Style="{StaticResource OutlineButton}"
+                                            <Button Grid.Column="0" Text="Sá»­a" Style="{StaticResource OutlineButton}"
                                                     HeightRequest="36" FontSize="13" Clicked="OnSuaClicked" CommandParameter="{Binding .}" />
-                                            <Button Grid.Column="1" Text="Xóa" HeightRequest="36" FontSize="13" CornerRadius="10"
+                                            <Button Grid.Column="1" Text="XÃ³a" HeightRequest="36" FontSize="13" CornerRadius="10"
                                                     BackgroundColor="Transparent" TextColor="{StaticResource Danger}"
                                                     BorderColor="{StaticResource Danger}" BorderWidth="1"
                                                     Clicked="OnXoaClicked" CommandParameter="{Binding .}" />
@@ -68,3 +71,5 @@
         </RefreshView>
     </Grid>
 </ContentPage>
+
+

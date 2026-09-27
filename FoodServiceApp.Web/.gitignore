@@ -1,0 +1,5 @@
+bin/
+obj/
+App_Data/vendor-data.json
+App_Data/*.tmp
+wwwroot/lib/
