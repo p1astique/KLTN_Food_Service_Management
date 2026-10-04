@@ -1,0 +1,9 @@
+@model VendorRegistration
+@{ ViewData["Title"] = "Đăng ký thành công"; }
+<div class="login-card">
+    <div class="login-brand"><span class="brand-icon">✓</span><span>Bếp Nhà<small class="muted" style="display:block;font:700 9px 'DM Sans';letter-spacing:1.4px">ĐỐI TÁC / GIAN HÀNG</small></span></div>
+    <h1>Đã gửi hồ sơ</h1>
+    <p>Hồ sơ <b>#@Model.Id</b> của <b>@Model.StoreName</b> đã được tiếp nhận.</p>
+    <div class="demo-note"><b>Trạng thái: Chờ duyệt</b><br/>Email: @Model.Email<br/>Gửi lúc: @Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</div>
+    <a class="btn btn-primary" asp-controller="Account" asp-action="Login">Về trang đăng nhập</a>
+</div>
