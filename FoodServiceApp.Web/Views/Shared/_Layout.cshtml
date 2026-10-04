@@ -17,7 +17,7 @@
                 <a asp-controller="Dashboard" asp-action="Index" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" ? "active" : "")"><span>⌂</span>Tổng quan</a>
                 <a asp-controller="Store" asp-action="Profile" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Store" ? "active" : "")"><span>▣</span>Thông tin gian hàng</a>
                 <a asp-controller="Catalog" asp-action="Index" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Catalog" ? "active" : "")"><span>▦</span>Danh mục & món ăn</a>
-                <a asp-controller="Orders" asp-action="Index" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Orders" ? "active" : "")"><span>▤</span>Đơn hàng</a>
+                <a asp-controller="Orders" asp-action="Index" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Orders" ? "active" : "")"><span>▤</span>Đơn hàng</a>\n                <a asp-controller="Promotions" asp-action="Index" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Promotions" ? "active" : "")"><span>％</span>Khuyến mãi</a>\n                <a asp-controller="Reports" asp-action="Index" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Reports" ? "active" : "")"><span>↗</span>Doanh thu & báo cáo</a>
             </nav>
             <div class="sidebar-bottom">
                 <div class="user-mini"><div class="avatar">@(User.Identity?.Name?.FirstOrDefault() ?? 'G')</div><div><b>@User.Identity?.Name</b><small>Đối tác gian hàng</small></div></div>
