@@ -7,6 +7,32 @@ public sealed class PortalData
     public List<FoodItem> Foods { get; set; } = new();
     public List<StoreOrder> Orders { get; set; } = new();
     public List<Promotion> Promotions { get; set; } = new();
+    public List<VendorRegistration> Registrations { get; set; } = new();
+}
+
+public enum RegistrationStatus { ChoDuyet, DaDuyet, TuChoi }
+
+public sealed class VendorRegistration
+{
+    public string Id { get; set; } = Guid.NewGuid().ToString("N");
+    public string OwnerName { get; set; } = "";
+    public string StoreName { get; set; } = "";
+    public string Email { get; set; } = "";
+    public string Phone { get; set; } = "";
+    public string Address { get; set; } = "";
+    public string BusinessType { get; set; } = "";
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
+    public RegistrationStatus Status { get; set; } = RegistrationStatus.ChoDuyet;
+}
+
+public sealed class VendorRegistrationForm
+{
+    public string OwnerName { get; set; } = "";
+    public string StoreName { get; set; } = "";
+    public string Email { get; set; } = "";
+    public string Phone { get; set; } = "";
+    public string Address { get; set; } = "";
+    public string BusinessType { get; set; } = "";
 }
 
 public sealed class StoreProfile
