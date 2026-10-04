@@ -41,15 +41,18 @@ public sealed class FoodItem
 
 public enum OrderStatus
 {
-    ChoXacNhan,
-    DaXacNhan,
-    DangChuanBi,
-    SanSangGiao,
-    DaBanGiaoTaiXe,
-    DangGiao,
-    HoanThanh,
-    DaTuChoi,
-    DaHuy
+    // Giữ nguyên các giá trị cũ vì vendor-data.json lưu enum dưới dạng số.
+    ChoXacNhan = 0,
+    DangChuanBi = 1,
+    DangGiao = 2,
+    HoanThanh = 3,
+    DaHuy = 4,
+
+    // Trạng thái bổ sung cho workflow gian hàng.
+    DaXacNhan = 5,
+    SanSangGiao = 6,
+    DaBanGiaoTaiXe = 7,
+    DaTuChoi = 8
 }
 
 public sealed class StoreOrder
