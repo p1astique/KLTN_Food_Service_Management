@@ -1,112 +1,159 @@
-# Food Service App — bản chuyển sang C# / .NET MAUI
+# Food Service Management — .NET MAUI + ASP.NET Core
 
-Bản chuyển đổi từ project Flutter sang **C# / .NET MAUI**, giữ nguyên toàn bộ
-luồng màn hình phía **Khách hàng** đã có: Đăng nhập/Đăng ký → Trang chủ →
-Thực đơn & Giỏ hàng → Thanh toán (kèm áp mã khuyến mãi) → Theo dõi đơn hàng
-→ Đánh giá, cộng thêm 3 tab Hoạt động / Ví tiền / Tin nhắn và trang Tài khoản.
+Đồ án quản lý dịch vụ ăn uống gồm ứng dụng **.NET MAUI** và cổng quản lý **ASP.NET Core Web**. Repository hiện đang được phát triển theo từng luồng chức năng; branch `feature/vendor-weekly-functions` tập trung vào **Đối tác/Gian hàng** và **Khuyến mãi**.
 
-Đã bổ sung luồng **Gian hàng (đối tác)** với các trang: đăng ký tham gia nền
-tảng (`VendorRegisterPage`, hồ sơ ở trạng thái chờ duyệt), đăng nhập
-(`VendorLoginPage`), trang chủ/dashboard (`VendorHomePage` — bật/tắt tình
-trạng kinh doanh, xem nhanh doanh thu và đơn chờ xác nhận), quản lý đơn hàng
-đầy đủ vòng đời tiếp nhận → xác nhận/từ chối → chuẩn bị → bàn giao tài xế
-(`VendorOrdersPage`), quản lý thực đơn — thêm/sửa/xóa món, bật tắt tình trạng
-còn/hết hàng (`VendorMenuPage`, `VendorMenuItemEditPage`), theo dõi doanh thu
-và món bán chạy (`VendorRevenuePage`), và hồ sơ cửa hàng (`VendorProfilePage`).
-Vào từ trang đăng nhập khách hàng qua liên kết "🏪 Bạn là gian hàng đối tác?".
+## Công nghệ
 
-Đã bổ sung luồng **Quản lý quản trị** với các trang: đăng nhập quản trị viên
-(`AdminLoginPage`), trang chủ tổng quan hệ thống — tổng gian hàng, tổng khách
-hàng, tổng doanh thu (`AdminHomePage`), duyệt/từ chối hồ sơ gian hàng mới đăng
-ký (`AdminVendorApprovalPage`), danh sách toàn bộ gian hàng kèm ngày tham gia,
-doanh thu ước tính theo từng đối tác và khóa/mở tài khoản
-(`AdminVendorListPage`), quản lý tài khoản khách hàng — khóa/mở
-(`AdminCustomerListPage`), và tiếp nhận/xử lý các vấn đề, khiếu nại phát sinh
-trong vận hành (`AdminIssuesPage`). Vào từ trang đăng nhập khách hàng qua liên
-kết "🛡️ Quản trị viên hệ thống".
+- .NET 8 / .NET MAUI
+- ASP.NET Core MVC / Web API
+- XAML
+- C#
+- Dữ liệu demo cục bộ bằng JSON và `MockData` ở các phần chưa nối backend thật
 
-Đã bổ sung **module Quản lý khuyến mãi** — chương trình khuyến mãi/mã giảm
-giá/voucher (`KhuyenMai`) có thể do gian hàng tự tạo (chỉ áp dụng cho gian
-hàng đó) hoặc do quản trị viên tạo áp dụng **toàn hệ thống**:
-- Phía gian hàng: `VendorPromotionsPage` (danh sách, bật/tắt, xóa) +
-  `VendorPromotionEditPage` (tạo/sửa mã — giảm theo % hoặc số tiền cố định,
-  đơn tối thiểu, giới hạn lượt dùng, thời hạn).
-- Phía quản trị: `AdminPromotionsPage` (giám sát toàn bộ mã trên nền tảng,
-  lọc theo phạm vi, bật/tắt/xóa) + `AdminPromotionEditPage` (tạo mã áp dụng
-  toàn hệ thống).
-- Phía khách hàng: `PaymentPage` giờ gọi thẳng `MockData.ApDungMaKhuyenMai(...)`
-  — kiểm tra mã tồn tại, còn hạn, còn lượt, đúng phạm vi gian hàng, đủ điều
-  kiện đơn tối thiểu — thay cho logic giả lập mã "GIAM10" cứng trước đây.
+## Các luồng chính
 
-**Còn thiếu để hoàn thiện toàn bộ đề cương:** module Thống kê & báo cáo cấp hệ
-thống (doanh thu/đơn hàng/món bán chạy/hiệu quả khuyến mãi tổng hợp toàn nền
-tảng theo ngày/tháng/năm — khác với báo cáo doanh thu riêng từng gian hàng đã
-có trong `VendorRevenuePage`).
+### Khách hàng
 
-## Vì sao không nộp sẵn file .csproj/.sln đầy đủ?
+Ứng dụng MAUI đã có các màn hình đăng nhập/đăng ký, trang chủ, thực đơn, giỏ hàng, thanh toán, theo dõi đơn hàng, đánh giá, hoạt động, ví tiền, tin nhắn và tài khoản.
 
-Sandbox tạo các file này không có .NET SDK và không truy cập được NuGet để
-tải khung project MAUI chuẩn (Platforms/Android, Platforms/iOS, Info.plist,
-AndroidManifest.xml...). Những file đó do `dotnet new maui` sinh ra và phụ
-thuộc đúng phiên bản SDK bạn cài — viết tay dễ bị lỗi/lỗi thời. Vì vậy cách
-an toàn nhất là bạn tự tạo khung project rỗng rồi copy các file **mã nguồn
-dùng chung** (Models, Views, App, AppShell) đè vào.
+### Đối tác / Gian hàng
 
-## Các bước tích hợp
+Phần gian hàng hiện có:
 
-1. Cài .NET SDK 8 + workload MAUI (Visual Studio 2022 có sẵn, hoặc chạy
-   `dotnet workload install maui`).
-2. Tạo project rỗng:
-   ```bash
-   dotnet new maui -n FoodServiceApp.Maui
-   cd FoodServiceApp.Maui
-   ```
-3. Copy đè các thư mục/file trong gói này vào project vừa tạo:
-   - `Models/Models.cs`
-   - `Converters/TrangThaiToTextConverter.cs`
-   - `Resources/Styles/Colors.xaml`, `Resources/Styles/Styles.xaml`
-   - `Views/*.xaml` và `*.xaml.cs` (10 trang)
-   - `App.xaml`, `App.xaml.cs`, `AppShell.xaml`, `AppShell.xaml.cs`,
-     `MauiProgram.cs` (đè lên file mặc định `dotnet new maui` đã tạo)
-4. Thêm 5 icon cho tab bar vào `Resources/Images/` (đặt tên đúng
-   `tab_home.png`, `tab_orders.png`, `tab_activity.png`, `tab_wallet.png`,
-   `tab_messages.png`) — có thể dùng icon tạm từ Google Fonts Icons trong
-   lúc chờ thiết kế chính thức.
-5. Build & chạy:
-   ```bash
-   dotnet build -t:Run -f net8.0-android
-   ```
+- Đăng ký gian hàng.
+- Đăng nhập và dashboard gian hàng.
+- Quản lý thông tin cửa hàng và trạng thái kinh doanh.
+- Quản lý danh mục và món ăn.
+- Thêm / sửa / xóa món.
+- Cập nhật giá, thông tin, hình ảnh và trạng thái còn/hết món.
+- Tiếp nhận và xử lý đơn hàng theo các bước xác nhận/từ chối → chuẩn bị → sẵn sàng giao → bàn giao tài xế.
+- Theo dõi doanh thu và báo cáo kinh doanh.
+- Quản lý chương trình khuyến mãi và voucher.
+
+Cổng Web hỗ trợ upload ảnh món ăn vào `wwwroot/uploads/foods`.
+
+### Duyệt đăng ký gian hàng
+
+Luồng đăng ký và duyệt gian hàng đã được nối giữa ASP.NET Core Web và ứng dụng MAUI Admin:
+
+```text
+Web đăng ký gian hàng
+        ↓
+vendor-data.json
+        ↓
+GET /api/vendor-registrations/pending
+        ↓
+MAUI Admin xem hồ sơ chờ duyệt
+        ↓
+Duyệt / Từ chối
+        ↓
+Web cập nhật trạng thái hồ sơ
+        ↓
+Danh sách gian hàng hiển thị các hồ sơ đã duyệt
+```
+
+Các endpoint hiện có:
+
+```text
+GET  /api/vendor-registrations
+GET  /api/vendor-registrations/pending
+POST /api/vendor-registrations/{id}/approve
+POST /api/vendor-registrations/{id}/reject
+```
+
+`AdminVendorApprovalPage` và `AdminVendorListPage` hiện lấy dữ liệu đăng ký từ Web API thay vì chỉ sử dụng `MockData`.
+
+> Lưu ý: danh sách gian hàng hiện đang dựa trên **hồ sơ đăng ký đã duyệt**. Việc tạo entity/tài khoản gian hàng hoàn chỉnh sau khi duyệt, khóa/mở khóa tài khoản và liên kết trạng thái kinh doanh với backend vẫn là phần cần hoàn thiện.
+
+### Khuyến mãi
+
+Hệ thống đã có giao diện và logic demo cho:
+
+- Tạo mã giảm giá/voucher.
+- Giảm theo phần trăm hoặc số tiền cố định.
+- Thiết lập thời gian áp dụng.
+- Điều kiện đơn hàng tối thiểu và giới hạn giảm.
+- Phạm vi áp dụng theo hệ thống/gian hàng.
+- Sửa, bật/tắt hoặc ngừng chương trình.
+- Hiển thị số lượt sử dụng để phục vụ theo dõi hiệu quả.
+
+Phần áp dụng voucher vào checkout thật và cập nhật lượt sử dụng tự động vẫn cần nối với backend/dữ liệu đơn hàng thực tế.
+
+### Quản trị
+
+Ứng dụng MAUI có các màn hình quản trị cho dashboard, duyệt hồ sơ gian hàng, danh sách gian hàng, quản lý khách hàng, khiếu nại/vấn đề, khuyến mãi và thống kê.
+
+Một số màn hình quản trị vẫn sử dụng `MockData`; riêng luồng duyệt đăng ký gian hàng đã gọi ASP.NET Core Web API.
+
+## Chạy project
+
+### ASP.NET Core Web
+
+Từ thư mục gốc:
+
+```powershell
+dotnet build .\FoodServiceApp.Web\FoodServiceApp.Web.csproj
+dotnet run --project .\FoodServiceApp.Web\FoodServiceApp.Web.csproj
+```
+
+Web mặc định trong môi trường phát triển hiện tại:
+
+```text
+http://localhost:5234
+```
+
+Có thể kiểm tra API đăng ký bằng:
+
+```text
+http://localhost:5234/api/vendor-registrations
+http://localhost:5234/api/vendor-registrations/pending
+```
+
+### .NET MAUI Windows
+
+```powershell
+dotnet build .\FoodServiceApp.Maui.csproj -f net8.0-windows10.0.19041.0
+dotnet run --project .\FoodServiceApp.Maui.csproj -f net8.0-windows10.0.19041.0
+```
+
+Khi test luồng Admin ↔ Web, cần giữ Web chạy song song với ứng dụng MAUI.
+
+## Cấu trúc liên quan
+
+```text
+FoodServiceApp.Maui/
+├── Models/
+├── Services/
+│   └── VendorRegistrationApiClient.cs
+├── Views/
+│   ├── AdminVendorApprovalPage.xaml
+│   ├── AdminVendorListPage.xaml
+│   └── ...
+└── FoodServiceApp.Web/
+    ├── Controllers/
+    │   ├── CatalogController.cs
+    │   └── VendorRegistrationsApiController.cs
+    ├── Models/
+    ├── Services/
+    ├── Views/
+    └── wwwroot/
+```
 
 ## Trạng thái hiện tại
 
-Toàn bộ dữ liệu vẫn là **mock data** trong `Models/Models.cs` — các điểm cần
-nối API thật (ASP.NET Core Web API + SQL Server) đã đánh dấu `// TODO` trong
-code (`/api/khach-hang/...`, `/api/don-hang`, `/api/thanh-toan`,
-`/api/danh-gia`, `/api/gian-hang/...`, `/api/quan-tri/...`,
-`/api/khuyen-mai/...`).
+Project đang ở giai đoạn tích hợp dần dữ liệu thật giữa MAUI và ASP.NET Core. Không nên hiểu toàn bộ ứng dụng đã sử dụng database/API thật.
 
-Đã bổ sung **module Thống kê & báo cáo toàn hệ thống** (`AdminStatisticsPage`,
-vào từ trang chủ quản trị "📊 Thống kê & báo cáo"): lọc theo khoảng thời gian
-(Hôm nay / 7 ngày / 30 ngày / Tất cả), tổng doanh thu — tổng đơn hoàn thành —
-giá trị đơn trung bình — tỉ lệ đơn bị hủy, doanh số xếp hạng theo từng gian
-hàng (dạng thanh tiến trình), top 5 món ăn bán chạy toàn nền tảng, và hiệu
-quả từng chương trình khuyến mãi (số lượt đã dùng/giới hạn). Toàn bộ tính
-trực tiếp từ `MockData.TatCaDonHangHeThong` (gộp mọi nguồn đơn hàng mock hiện
-có) — ghi rõ TODO thay bằng API thống kê thật khi có backend + CSDL.
+Các phần cần tiếp tục hoàn thiện gồm:
 
-**Vậy là đã có đủ giao diện cho 6/6 nhóm yêu cầu chức năng trong đề cương**
-(Mua hàng, Gian hàng, Đơn hàng & giao hàng, Khuyến mãi, Quản trị, Thống kê).
+- Tạo gian hàng/tài khoản gian hàng hoàn chỉnh sau khi Admin duyệt hồ sơ.
+- Khóa/mở khóa tài khoản gian hàng qua backend.
+- Đồng bộ trạng thái mở/đóng cửa với backend.
+- Kết nối các màn hình MAUI còn dùng `MockData` sang API thật.
+- Hoàn thiện dữ liệu doanh thu, thống kê và hiệu quả khuyến mãi từ đơn hàng thực tế.
+- Hoàn thiện xác thực và phân quyền cho môi trường production.
 
-## Giới hạn còn lại (thuộc tầng hạ tầng, không phải thiếu chức năng)
+## Ghi chú phát triển
 
-- Toàn bộ vẫn chạy trên **dữ liệu mock**, chưa có API ASP.NET Core + CSDL
-  SQL Server thật như đề cương yêu cầu (mục 7).
-- Chưa build/chạy thử được trong môi trường tạo project này (không có
-  .NET MAUI workload) — mới kiểm tra cú pháp C#/XAML bằng mắt và validate
-  XML của toàn bộ file `.xaml`.
-- Chưa làm phần **giao diện Website** (đề cương yêu cầu cả Website lẫn
-  Mobile ở mục 6) — hiện chỉ có bản Mobile (.NET MAUI).
-- Kết nối API thật, lưu token đăng nhập (nên dùng `SecureStorage` có sẵn
-  trong MAUI thay vì tự viết).
-- Luồng khuyến mãi chưa gắn `SoLuongDaDung` tăng tự động khi đơn hàng đặt
-  thành công (hiện chỉ tính trên số liệu mock có sẵn) — cần nối khi có API.
+Thư mục `FoodServiceApp.Web` là project riêng nằm bên trong repository MAUI và đã được loại khỏi quá trình compile của `FoodServiceApp.Maui.csproj`.
+
+Không commit các file sinh ra khi build trong `bin/` và `obj/`. Khi commit thay đổi, nên stage từng file source cần thiết thay vì dùng `git add .`.
