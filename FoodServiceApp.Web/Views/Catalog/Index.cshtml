@@ -31,14 +31,43 @@
     <div class="section-head"><h2 class="section-title">@(string.IsNullOrEmpty(Model.Form.Id) ? "Thêm món ăn" : "Cập nhật món ăn")</h2>@if(!string.IsNullOrEmpty(Model.Form.Id)){<a class="text-link" asp-action="Index">＋ Tạo món mới</a>}</div>
     @if(Model.Categories.Count == 0){<div class="alert error">Hãy tạo danh mục trước khi thêm món ăn.</div>}
     else {
-    <form asp-action="SaveFood" method="post">
+    <form asp-action="SaveFood" method="post" enctype="multipart/form-data">
         @Html.AntiForgeryToken()<input asp-for="Form.Id" type="hidden" name="Id" />
         <div class="form-grid">
             <div class="field"><label for="food-name">Tên món *</label><input id="food-name" name="Name" value="@Model.Form.Name" required maxlength="100" placeholder="Ví dụ: Cơm tấm sườn bì chả" /></div>
             <div class="field"><label for="category-id">Danh mục *</label><select id="category-id" name="CategoryId" required><option value="">Chọn danh mục</option>@foreach(var cat in Model.Categories){<option value="@cat.Id" selected="@(cat.Id == Model.Form.CategoryId)">@cat.Name</option>}</select></div>
             <div class="field"><label for="food-price">Giá bán (đ) *</label><input id="food-price" name="Price" type="number" min="1000" step="1000" value="@(Model.Form.Price == 0 ? "" : Model.Form.Price)" required /></div>
             <div class="field"><label for="food-emoji">Biểu tượng</label><input id="food-emoji" name="Emoji" value="@Model.Form.Emoji" maxlength="8" /></div>
-            <div class="field" style="grid-column:1/-1"><label for="food-image">URL hình ảnh món</label><input id="food-image" name="ImageUrl" value="@Model.Form.ImageUrl" maxlength="500" placeholder="https://.../mon-an.jpg" /></div>
+            <div class="field" style="grid-column:1/-1">
+    <label for="food-image">Hình ảnh món</label>
+
+    <input
+        id="food-image"
+        name="imageFile"
+        type="file"
+        accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" />
+
+    <div id="image-preview-container"
+         style="margin-top:12px; @(string.IsNullOrWhiteSpace(Model.Form.ImageUrl) ? "display:none;" : "")">
+
+        <img id="image-preview"
+             src="@Model.Form.ImageUrl"
+             alt="Ảnh món ăn"
+             style="width:180px;
+                    height:130px;
+                    object-fit:cover;
+                    border-radius:10px;
+                    border:1px solid #ddd;" />
+
+        <div id="image-preview-text"
+             class="muted"
+             style="margin-top:5px;font-size:12px">
+            @(string.IsNullOrWhiteSpace(Model.Form.ImageUrl)
+                ? "Ảnh xem trước"
+                : "Ảnh hiện tại")
+        </div>
+    </div>
+</div>
             <div class="field" style="grid-column:1/-1"><label for="food-description">Mô tả</label><input id="food-description" name="Description" value="@Model.Form.Description" maxlength="250" placeholder="Mô tả ngắn về món ăn" /></div>
         </div>
         <div class="field"><label style="display:flex;gap:8px;align-items:center;font-weight:500"><input type="checkbox" name="InStock" value="true" checked="@(Model.Form.InStock ? "checked" : null)" style="accent-color:var(--green)" /> Món đang còn hàng</label></div>

@@ -59,4 +59,12 @@
 		<MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<!-- FoodServiceApp.Web là project riêng, không compile chung với MAUI -->
+		<Compile Remove="FoodServiceApp.Web\**\*.cs" />
+		<EmbeddedResource Remove="FoodServiceApp.Web\**\*" />
+		<None Remove="FoodServiceApp.Web\**\*" />
+		<Content Remove="FoodServiceApp.Web\**\*" />
+	</ItemGroup>
+
 </Project>

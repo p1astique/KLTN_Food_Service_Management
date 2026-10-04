@@ -62,39 +62,125 @@ public sealed class CatalogController(VendorDataStore store) : Controller
     }
 
     [HttpPost, ValidateAntiForgeryToken]
-    public IActionResult SaveFood(FoodFormModel input)
+public async Task<IActionResult> SaveFood(
+    FoodFormModel input,
+    IFormFile? imageFile)
+{
+    var hasCategory = store.Read(
+        d => d.Categories.Any(c => c.Id == input.CategoryId));
+
+    if (string.IsNullOrWhiteSpace(input.Name) ||
+        input.Name.Trim().Length > 100 ||
+        input.Price <= 0 ||
+        !hasCategory)
     {
-        var hasCategory = store.Read(d => d.Categories.Any(c => c.Id == input.CategoryId));
-        if (string.IsNullOrWhiteSpace(input.Name) || input.Name.Trim().Length > 100 || input.Price <= 0 || !hasCategory)
+        TempData["Error"] =
+            "Tên món, giá bán và danh mục cần hợp lệ.";
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    string? newImageUrl = null;
+
+    // Nếu người dùng chọn ảnh mới
+    if (imageFile is not null && imageFile.Length > 0)
+    {
+        // Chỉ cho phép một số định dạng ảnh
+        var allowedExtensions = new[]
         {
-            TempData["Error"] = "Tên món, giá bán và danh mục cần hợp lệ.";
+            ".jpg",
+            ".jpeg",
+            ".png",
+            ".webp"
+        };
+
+        var extension =
+            Path.GetExtension(imageFile.FileName).ToLowerInvariant();
+
+        if (!allowedExtensions.Contains(extension))
+        {
+            TempData["Error"] =
+                "Ảnh món chỉ hỗ trợ JPG, JPEG, PNG hoặc WEBP.";
+
             return RedirectToAction(nameof(Index));
         }
-        store.Update(d =>
+
+        // Giới hạn 5 MB
+        if (imageFile.Length > 5 * 1024 * 1024)
         {
-            var item = string.IsNullOrWhiteSpace(input.Id) ? null : d.Foods.FirstOrDefault(f => f.Id == input.Id);
-            if (item is null) { item = new FoodItem { Id = Guid.NewGuid().ToString("N") }; d.Foods.Add(item); }
-            item.Name = input.Name.Trim(); item.CategoryId = input.CategoryId; item.Price = input.Price;
-            item.Emoji = string.IsNullOrWhiteSpace(input.Emoji) ? "🍲" : input.Emoji.Trim();
-            item.ImageUrl = input.ImageUrl?.Trim() ?? "";
-            item.Description = input.Description?.Trim() ?? ""; item.InStock = input.InStock;
-        });
-        TempData["Success"] = "Đã lưu món ăn.";
-        return RedirectToAction(nameof(Index));
+            TempData["Error"] =
+                "Ảnh món không được lớn hơn 5 MB.";
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        // wwwroot/uploads/foods
+        var uploadFolder = Path.Combine(
+            Directory.GetCurrentDirectory(),
+            "wwwroot",
+            "uploads",
+            "foods");
+
+        Directory.CreateDirectory(uploadFolder);
+
+        // Tạo tên file riêng để tránh trùng
+        var fileName =
+            $"{Guid.NewGuid():N}{extension}";
+
+        var filePath =
+            Path.Combine(uploadFolder, fileName);
+
+        await using var stream =
+            new FileStream(filePath, FileMode.Create);
+
+        await imageFile.CopyToAsync(stream);
+
+        // Đường dẫn dùng trên website
+        newImageUrl =
+            $"/uploads/foods/{fileName}";
     }
 
-    [HttpPost, ValidateAntiForgeryToken]
-    public IActionResult ToggleStock(string id)
+    store.Update(d =>
     {
-        store.Update(d => { var item = d.Foods.FirstOrDefault(f => f.Id == id); if (item is not null) item.InStock = !item.InStock; });
-        return RedirectToAction(nameof(Index));
-    }
+        var item =
+            string.IsNullOrWhiteSpace(input.Id)
+                ? null
+                : d.Foods.FirstOrDefault(f => f.Id == input.Id);
 
-    [HttpPost, ValidateAntiForgeryToken]
-    public IActionResult DeleteFood(string id)
-    {
-        store.Update(d => d.Foods.RemoveAll(f => f.Id == id));
-        TempData["Success"] = "Đã xóa món ăn.";
-        return RedirectToAction(nameof(Index));
+        if (item is null)
+        {
+            item = new FoodItem
+            {
+                Id = Guid.NewGuid().ToString("N")
+            };
+
+            d.Foods.Add(item);
+        }
+
+        item.Name = input.Name.Trim();
+        item.CategoryId = input.CategoryId;
+        item.Price = input.Price;
+
+        item.Emoji =
+            string.IsNullOrWhiteSpace(input.Emoji)
+                ? "🍲"
+                : input.Emoji.Trim();
+
+        item.Description =
+            input.Description?.Trim() ?? "";
+
+        item.InStock = input.InStock;
+
+        // Có upload ảnh mới thì thay ảnh.
+        // Không upload thì giữ ảnh cũ.
+        if (newImageUrl is not null)
+        {
+            item.ImageUrl = newImageUrl;
+        }
+    });
+
+    TempData["Success"] = "Đã lưu món ăn.";
+
+    return RedirectToAction(nameof(Index));
     }
 }
