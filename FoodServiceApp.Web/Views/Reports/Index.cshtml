@@ -1,0 +1,12 @@
+@model ReportViewModel
+@{ ViewData["Title"] = "Báo cáo kinh doanh"; }
+<div class="page-heading"><div><h1>Doanh thu & báo cáo</h1><p>Theo dõi kết quả kinh doanh của gian hàng.</p></div></div>
+<div class="stats">
+<div class="card"><div class="stat-label">Doanh thu hôm nay</div><div class="stat-value">@Model.RevenueToday.ToString("N0") đ</div></div>
+<div class="card"><div class="stat-label">Doanh thu tháng này</div><div class="stat-value">@Model.RevenueThisMonth.ToString("N0") đ</div></div>
+<div class="card"><div class="stat-label">Đơn hoàn thành tháng</div><div class="stat-value">@Model.CompletedOrders</div></div>
+<div class="card"><div class="stat-label">Giá trị đơn trung bình</div><div class="stat-value">@Model.AverageOrderValue.ToString("N0") đ</div><div class="stat-foot">@Model.CancelledOrders đơn hủy/từ chối trong tháng</div></div>
+</div>
+<div class="card"><div class="section-head"><h2 class="section-title">7 ngày gần nhất</h2></div><div class="table-wrap"><table><thead><tr><th>NGÀY</th><th>ĐƠN HOÀN THÀNH</th><th>DOANH THU</th></tr></thead><tbody>
+@foreach(var d in Model.DailyRevenue){<tr><td>@d.Date.ToString("dd/MM/yyyy")</td><td>@d.Orders</td><td><b>@d.Revenue.ToString("N0") đ</b></td></tr>}
+</tbody></table></div></div>
