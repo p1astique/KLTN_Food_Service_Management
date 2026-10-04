@@ -20,4 +20,4 @@
         <div style="border-top:1px solid var(--line);margin-top:17px;padding-top:14px;color:var(--muted);line-height:1.9">☎ @Model.Store.Phone<br />✉ @Model.Store.Email</div>
     </div>
 </div>
-@functions { string StatusLabel(OrderStatus s) => s switch { OrderStatus.ChoXacNhan => "Chờ xác nhận", OrderStatus.DangChuanBi => "Đang chuẩn bị", OrderStatus.DangGiao => "Đang giao", OrderStatus.HoanThanh => "Hoàn thành", _ => "Đã hủy" }; }
+@functions { string StatusLabel(OrderStatus s) => s switch { OrderStatus.ChoXacNhan => "Chờ xác nhận", OrderStatus.DaXacNhan => "Đã xác nhận", OrderStatus.DangChuanBi => "Đang chuẩn bị", OrderStatus.SanSangGiao => "Sẵn sàng giao", OrderStatus.DaBanGiaoTaiXe => "Đã bàn giao tài xế", OrderStatus.DangGiao => "Đang giao", OrderStatus.HoanThanh => "Hoàn thành", OrderStatus.DaTuChoi => "Đã từ chối", _ => "Đã hủy" }; }
